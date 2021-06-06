@@ -13,7 +13,6 @@ from pychem import constitution
 from pychem import connectivity as co
 from pychem.pychem1 import Chem
 from pychem import bcut
-
 from rdkit import Chem as chem
 from rdkit import DataStructs as datastructs
 from rdkit.Chem import AllChem
@@ -24,8 +23,6 @@ import xlrd
 import math
 from rdkit.Chem.Draw import SimilarityMaps
 from pychem.pychem1 import PyChem2d
-#数据输入
-#data\ele con\
 y=[]
 x=[[] for _ in range(221)]
 workbook=xlrd.open_workbook(r'C:\Users\Administrator\Desktop\SO2rongjiedu.xlsx')
@@ -35,7 +32,6 @@ YANG=data.col_values(1)
 t=data.col_values(2)
 p=data.col_values(3)
 y=data.col_values(4)
-#print(YIN)
 i=0
 while i < 221:
     a=YIN[i]
@@ -71,16 +67,13 @@ from keras import backend as K
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn import metrics
-########################################################################################
 from pandas.core.frame import DataFrame
 x1=DataFrame(x)
-#数据缩放
 from sklearn.svm import SVR
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn import metrics
-#特征工程
 from feature_selector import  FeatureSelector
 fs=FeatureSelector(data=x1,labels=y)
 fs.identify_missing( missing_threshold=0.1)
@@ -90,17 +83,13 @@ fs.identify_collinear(correlation_threshold=0.79)
 train_no_missing = fs.remove(methods = ['missing','single_unique','collinear'],keep_one_hot=True)
 train_no_missing=np.array(train_no_missing)
 x1=train_no_missing.tolist()
-########################################################################################
-########################################################################################
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import scale
 x1=StandardScaler().fit_transform(x1)
 y=np.array(y)
 x1=np.expand_dims(x1,axis=2)
-########################################################################################
 print(x1[0])
 x_train,x_test,y_train,y_test=train_test_split(x1,y,test_size=0.2)
-#################################################
 from keras.models import Sequential
 from keras.models import Sequential
 from keras.layers import Dense,LSTM,TimeDistributed
@@ -130,23 +119,8 @@ print(model.summary())
 from keras.models import Model
 model1=Model(inputs=model.input,outputs=model.get_layer('Dense_1').output)
 x_train=model1.predict(x_train)
-print(x_train.shape)
-###########################################
 x_test=model1.predict(x_test)
 x1=model1.predict(x1)
-print(x1)
-##########################################################################################
 from sklearn.ensemble import RandomForestRegressor
 modelx=RandomForestRegressor(n_estimators=45)
 modelx.fit(x_train,y_train)
-#################################################################################################
-from sklearn.metrics import r2_score
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import mean_squared_error
-print(r2_score(y_train,modelx.predict(x_train)))
-print(mean_absolute_error(y_train,modelx.predict(x_train)))
-print(mean_squared_error(y_train,modelx.predict(x_train)))
-print(r2_score(y_test,modelx.predict(x_test)))
-print(mean_absolute_error(y_test,modelx.predict(x_test)))
-print(mean_squared_error(y_test,modelx.predict(x_test)))
-###################################################################################################

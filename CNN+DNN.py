@@ -13,18 +13,44 @@ from pychem import constitution
 from pychem import connectivity as co
 from pychem.pychem1 import Chem
 from pychem import bcut
-
+import keras
+from sklearn.neural_network import MLPRegressor
+from sklearn.svm import SVR
+import numpy as np
+import pandas as pdfrom sklearn.svm import SVR
+from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn import metrics
+from feature_selector import  FeatureSelector
+from keras.models import Sequential
+from keras.utils import np_utils,plot_model
+from sklearn.model_selection import cross_val_score,train_test_split
+from keras.layers import Dense, Dropout,Flatten,Conv1D,MaxPooling1D
+from keras.models import model_from_json
+import matplotlib.pyplot as plt
+from keras import backend as K
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn import metrics
+from pandas.core.frame import DataFrame
 from rdkit import Chem as chem
 from rdkit import DataStructs as datastructs
 from rdkit.Chem import AllChem
 from rdkit.Chem import Descriptors
 from rdkit.Chem import Draw
-import numpy as np
+import numpy as npfrom keras.models import Sequential
+from keras.models import Sequential
+from keras.layers import Dense,LSTM,TimeDistributed
+from keras.optimizers import Adam
+from keras.layers import Convolution1D,ZeroPadding1D,MaxPool1D
+from tensorflow.python.keras.layers import Dense, Dropout, Activation, Flatten, Conv1D, MaxPool1D
+from keras.callbacks import EarlyStopping
+from keras.optimizers import Nadam
 import xlrd
 import math
 from rdkit.Chem.Draw import SimilarityMaps
 from pychem.pychem1 import PyChem2d
-#数据输入
 #data\ele con\
 y=[]
 x=[[] for _ in range(221)]
@@ -56,32 +82,7 @@ while i < 221:
     x[i].append(t[i])
     x[i].append(p[i])
     i=i+1
-import keras
-from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVR
-import numpy as np
-import pandas as pd
-from keras.models import Sequential
-from keras.utils import np_utils,plot_model
-from sklearn.model_selection import cross_val_score,train_test_split
-from keras.layers import Dense, Dropout,Flatten,Conv1D,MaxPooling1D
-from keras.models import model_from_json
-import matplotlib.pyplot as plt
-from keras import backend as K
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
-from sklearn import metrics
-########################################################################################
-from pandas.core.frame import DataFrame
 x1=DataFrame(x)
-#数据缩放
-from sklearn.svm import SVR
-from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
-from sklearn import metrics
-#特征工程
-from feature_selector import  FeatureSelector
 fs=FeatureSelector(data=x1,labels=y)
 fs.identify_missing( missing_threshold=0.1)
 fs.missing_stats.head()
@@ -90,25 +91,12 @@ fs.identify_collinear(correlation_threshold=0.79)
 train_no_missing = fs.remove(methods = ['missing','single_unique','collinear'],keep_one_hot=True)
 train_no_missing=np.array(train_no_missing)
 x1=train_no_missing.tolist()
-########################################################################################
-########################################################################################
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import scale
 x1=StandardScaler().fit_transform(x1)
 y=np.array(y)
 x1=np.expand_dims(x1,axis=2)
-########################################################################################
-print(x1[0])
 x_train,x_test,y_train,y_test=train_test_split(x1,y,test_size=0.2)
-#################################################
-from keras.models import Sequential
-from keras.models import Sequential
-from keras.layers import Dense,LSTM,TimeDistributed
-from keras.optimizers import Adam
-from keras.layers import Convolution1D,ZeroPadding1D,MaxPool1D
-from tensorflow.python.keras.layers import Dense, Dropout, Activation, Flatten, Conv1D, MaxPool1D
-from keras.callbacks import EarlyStopping
-from keras.optimizers import Nadam
 model = Sequential()
 model.add(Convolution1D(32, 3, activation='sigmoid', padding="same"))
 model.add(Convolution1D(64, 3, activation='sigmoid'))
@@ -129,10 +117,8 @@ print(model.summary())
 from keras.models import Model
 model1=Model(inputs=model.input,outputs=model.get_layer('Dense_1').output)
 x_train=model1.predict(x_train)
-###########################################
 x_test=model1.predict(x_test)
 x1=model1.predict(x1)
-##########################################################################################
 from keras.models import Sequential
 from keras.layers import Dense,LSTM,TimeDistributed
 from keras.optimizers import Adagrad
@@ -149,14 +135,4 @@ print('train=========')
 early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=2)
 modelx.fit(x_train,y_train,epochs=10000,validation_data=(x_test,y_test),callbacks=early_stopping,batch_size=20)
 cost = modelx.evaluate(x_test,y_test)
-#################################################################################################
-from sklearn.metrics import r2_score
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import mean_squared_error
-print(r2_score(y_train,modelx.predict(x_train)))
-print(mean_absolute_error(y_train,modelx.predict(x_train)))
-print(mean_squared_error(y_train,modelx.predict(x_train)))
-print(r2_score(y_test,modelx.predict(x_test)))
-print(mean_absolute_error(y_test,modelx.predict(x_test)))
-print(mean_squared_error(y_test,modelx.predict(x_test)))
 

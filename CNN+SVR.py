@@ -116,5 +116,5 @@ x_train=model1.predict(x_train)
 x_test=model1.predict(x_test)
 x1=model1.predict(x1)
 from sklearn.svm import SVR
-modelx=SVR(kernel='rbf',C=9)
+modelx=SVR(kernel='rbf',C=8)
 modelx.fit(x_train,y_train)

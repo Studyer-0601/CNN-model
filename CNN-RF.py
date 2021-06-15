@@ -122,5 +122,5 @@ x_train=model1.predict(x_train)
 x_test=model1.predict(x_test)
 x1=model1.predict(x1)
 from sklearn.ensemble import RandomForestRegressor
-modelx=RandomForestRegressor(n_estimators=45)
+modelx=RandomForestRegressor(n_estimators=40)
 modelx.fit(x_train,y_train)

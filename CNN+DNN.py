@@ -53,34 +53,52 @@ from rdkit.Chem.Draw import SimilarityMaps
 from pychem.pychem1 import PyChem2d
 #data\ele con\
 y=[]
-x=[[] for _ in range(221)]
-workbook=xlrd.open_workbook(r'C:\Users\Administrator\Desktop\SO2rongjiedu.xlsx')
+x=[[] for _ in range(266)]
+workbook=xlrd.open_workbook(r'C:\Users\Administrator\Desktop\toxic159.xlsx')#打开excel
 data=workbook.sheets()[0]
-YIN=data.col_values(0)
-YANG=data.col_values(1)
+yin=data.col_values(8)
+yang=data.col_values(7)
 t=data.col_values(2)
 p=data.col_values(3)
-y=data.col_values(4)
+from pychem import estate
+from pychem import basak
+from pychem import moran,geary
+from pychem import molproperty as mp
+from pychem import moe
+from pychem import topology
+from rdkit.ML.Descriptors import MoleculeDescriptors
 #print(YIN)
+from rdkit.ML.Descriptors import MoleculeDescriptors
+#print(YIN)
+des=[x[0] for x in Descriptors._descList]
+des.pop(10)
+des.pop(10)
+des.pop(10)
+des.pop(10)
+calculator = MoleculeDescriptors.MolecularDescriptorCalculator(des)
+
+a=calculator.GetDescriptorSummaries()
 i=0
-while i < 221:
-    a=YIN[i]
-    b=YANG[i]
-    print(i+1)
-    alldes1 = {}
-    alldes2= {}
-    drug1 = PyChem2d()
-    drug1.ReadMolFromSmile(a)
-    alldes1.update(drug1.GetAllDescriptor())
-    drug2 = PyChem2d()
-    drug2.ReadMolFromSmile(b)
-    alldes2.update(drug2.GetAllDescriptor())
-    for l in alldes1.values():
-        x[i].append(l)
-    for k in alldes2.values():
-        x[i].append(k)
-    x[i].append(t[i])
-    x[i].append(p[i])
+while i < 196:
+     if a[i]=='N/A':
+         des.pop(i)
+     i=i+1
+print(len(des))
+calculator = MoleculeDescriptors.MolecularDescriptorCalculator(des)
+i=0
+while i < 266:
+    print(i)
+    #print(YIN[i+1])
+    a=yin[i]
+    b = yang[i]
+    print(a)
+    mol=Chem.MolFromSmiles(a)
+    molb = Chem.MolFromSmiles(b)
+    xx=calculator.CalcDescriptors(mol)
+    xxb=calculator.CalcDescriptors(molb)
+    xx=list(xx)
+    xxb = list(xxb)
+    x[i]=xx+xxb
     i=i+1
 x1=DataFrame(x)
 fs=FeatureSelector(data=x1,labels=y)
